@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mental Fitness Tracker Pro</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+      <div class="loading-content">
+        <div class="loading-logo">🧠</div>
+        <div class="loading-text">Mental Fitness Tracker</div>
+        <div class="loading-spinner"></div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="nav-logo">
+          <i class="fas fa-brain"></i>
+          <span>MindFit Pro</span>
+        </div>
+        <div class="nav-menu" id="navMenu">
+          <a href="#dashboard" class="nav-link active" data-section="dashboard">
+            <i class="fas fa-chart-line"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="#mood" class="nav-link" data-section="mood">
+            <i class="fas fa-smile"></i>
+            <span>Mood</span>
+          </a>
+          <a href="#gratitude" class="nav-link" data-section="gratitude">
+            <i class="fas fa-heart"></i>
+            <span>Gratitude</span>
+          </a>
+          <a href="#meditation" class="nav-link" data-section="meditation">
+            <i class="fas fa-leaf"></i>
+            <span>Meditation</span>
+          </a>
+          <a href="#goals" class="nav-link" data-section="goals">
+            <i class="fas fa-target"></i>
+            <span>Goals</span>
+          </a>
+          <a href="#insights" class="nav-link" data-section="insights">
+            <i class="fas fa-lightbulb"></i>
+            <span>Insights</span>
+          </a>
+        </div>
+        <div class="nav-controls">
+          <button class="theme-toggle" id="themeToggle">
+            <i class="fas fa-moon"></i>
+          </button>
+          <button class="nav-toggle" id="navToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="main-container">
+      <!-- Dashboard Section -->
+      <section class="section active" id="dashboard">
+        <div class="section-header">
+          <h1>Welcome back! 👋</h1>
+          <p>Here's your mental wellness overview</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card primary">
+            <div class="stat-icon">
+              <i class="fas fa-smile"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number" id="avgMoodStat">0</div>
+              <div class="stat-label">Average Mood</div>
+              <div class="stat-change positive" id="moodChange">
+                +0.2 from last week
+              </div>
+            </div>
+          </div>
+          <div class="stat-card success">
+            <div class="stat-icon">
+              <i class="fas fa-fire"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number" id="streakStat">0</div>
+              <div class="stat-label">Day Streak</div>
+              <div class="stat-change positive" id="streakChange">
+                Keep it up!
+              </div>
+            </div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-icon">
+              <i class="fas fa-heart"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number" id="gratitudeStat">0</div>
+              <div class="stat-label">Gratitude Entries</div>
+              <div class="stat-change positive" id="gratitudeChange">
+                This month
+              </div>
+            </div>
+          </div>
+          <div class="stat-card info">
+            <div class="stat-icon">
+              <i class="fas fa-leaf"></i>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number" id="meditationStat">0</div>
+              <div class="stat-label">Minutes Meditated</div>
+              <div class="stat-change positive" id="meditationChange">
+                This week
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="glass-card">
+            <div class="card-header">
+              <h3>Mood Trends</h3>
+              <div class="card-actions">
+                <button class="btn-icon" onclick="refreshMoodChart()">
+                  <i class="fas fa-refresh"></i>
+                </button>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="moodChart"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-header">
+              <h3>Daily Quote</h3>
+              <div class="card-actions">
+                <button class="btn-icon" onclick="getNewQuote()">
+                  <i class="fas fa-refresh"></i>
+                </button>
+              </div>
+            </div>
+            <div class="quote-container">
+              <div class="quote-text" id="dashboardQuote">
+                Loading inspiration...
+              </div>
+              <div class="quote-author" id="dashboardAuthor"></div>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-header">
+              <h3>Quick Actions</h3>
+            </div>
+            <div class="quick-actions">
+              <button class="quick-action-btn" onclick="showSection('mood')">
+                <i class="fas fa-smile"></i>
+                <span>Log Mood</span>
+              </button>
+              <button
+                class="quick-action-btn"
+                onclick="showSection('gratitude')"
+              >
+                <i class="fas fa-heart"></i>
+                <span>Add Gratitude</span>
+              </button>
+              <button
+                class="quick-action-btn"
+                onclick="showSection('meditation')"
+              >
+                <i class="fas fa-leaf"></i>
+                <span>Meditate</span>
+              </button>
+              <button class="quick-action-btn" onclick="showSection('goals')">
+                <i class="fas fa-target"></i>
+                <span>Set Goal</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-header">
+              <h3>Recent Activity</h3>
+            </div>
+            <div class="activity-feed" id="activityFeed">
+              <!-- Activity items will be populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Mood Section -->
+      <section class="section" id="mood">
+        <div class="section-header">
+          <h1>Mood Tracker 😊</h1>
+          <p>How are you feeling today?</p>
+        </div>
+
+        <div class="mood-container">
+          <div class="glass-card mood-card">
+            <div class="mood-display-large" id="moodDisplayLarge">😐</div>
+            <div class="mood-slider-container">
+              <input
+                type="range"
+                min="1"
+                max="5"
+                value="3"
+                class="mood-slider-enhanced"
+                id="moodSlider"
+              />
+              <div class="mood-labels-enhanced">
+                <span data-mood="1">😢<br />Terrible</span>
+                <span data-mood="2">😕<br />Bad</span>
+                <span data-mood="3">😐<br />Okay</span>
+                <span data-mood="4">😊<br />Good</span>
+                <span data-mood="5">😄<br />Amazing</span>
+              </div>
+            </div>
+            <div class="mood-note-container">
+              <textarea
+                id="moodNote"
+                placeholder="What's influencing your mood today? (optional)"
+              ></textarea>
+            </div>
+            <button class="btn-primary" onclick="saveMoodEnhanced()">
+              <i class="fas fa-save"></i>
+              Save Mood
+            </button>
+          </div>
+
+          <div class="glass-card mood-history">
+            <div class="card-header">
+              <h3>Mood History</h3>
+              <div class="card-actions">
+                <select id="moodHistoryFilter" onchange="filterMoodHistory()">
+                  <option value="7">Last 7 days</option>
+                  <option value="30">Last 30 days</option>
+                  <option value="90">Last 3 months</option>
+                </select>
+              </div>
+            </div>
+            <div class="mood-history-chart">
+              <canvas id="moodHistoryChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="mood-insights">
+          <div class="glass-card">
+            <div class="card-header">
+              <h3>Mood Patterns</h3>
+            </div>
+            <div class="pattern-grid" id="moodPatterns">
+              <!-- Patterns will be populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Gratitude Section -->
+      <section class="section" id="gratitude">
+        <div class="section-header">
+          <h1>Gratitude Journal 🙏</h1>
+          <p>What are you grateful for today?</p>
+        </div>
+
+        <div class="gratitude-container">
+          <div class="glass-card gratitude-editor">
+            <div class="gratitude-form">
+              <div class="form-group">
+                <label for="gratitudeCategory">Category</label>
+                <select id="gratitudeCategory">
+                  <option value="general">General</option>
+                  <option value="family">Family</option>
+                  <option value="friends">Friends</option>
+                  <option value="work">Work</option>
+                  <option value="health">Health</option>
+                  <option value="nature">Nature</option>
+                  <option value="achievements">Achievements</option>
+                  <option value="experiences">Experiences</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="gratitudeText">What are you grateful for?</label>
+                <textarea
+                  id="gratitudeText"
+                  placeholder="I'm grateful for..."
+                  rows="4"
+                ></textarea>
+              </div>
+              <div class="form-actions">
+                <button class="btn-secondary" onclick="clearGratitudeForm()">
+                  <i class="fas fa-times"></i>
+                  Clear
+                </button>
+                <button class="btn-primary" onclick="saveGratitudeEnhanced()">
+                  <i class="fas fa-heart"></i>
+                  Save Entry
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card gratitude-search">
+            <div class="search-container">
+              <div class="search-input-container">
+                <i class="fas fa-search"></i>
+                <input
+                  type="text"
+                  id="gratitudeSearch"
+                  placeholder="Search your gratitude entries..."
+                />
+              </div>
+              <div class="filter-container">
+                <select id="categoryFilter" onchange="filterGratitudeEntries()">
+                  <option value="all">All Categories</option>
+                  <option value="general">General</option>
+                  <option value="family">Family</option>
+                  <option value="friends">Friends</option>
+                  <option value="work">Work</option>
+                  <option value="health">Health</option>
+                  <option value="nature">Nature</option>
+                  <option value="achievements">Achievements</option>
+                  <option value="experiences">Experiences</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gratitude-entries-container">
+          <div class="glass-card">
+            <div class="card-header">
+              <h3>Your Gratitude Journey</h3>
+              <div class="card-actions">
+                <button class="btn-icon" onclick="exportGratitudeData()">
+                  <i class="fas fa-download"></i>
+                </button>
+              </div>
+            </div>
+            <div class="gratitude-entries" id="gratitudeEntriesContainer">
+              <!-- Entries will be populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Meditation Section -->
+      <section class="section" id="meditation">
+        <div class="section-header">
+          <h1>Meditation & Mindfulness 🧘‍♀️</h1>
+          <p>Take a moment to center yourself</p>
+        </div>
+
+        <div class="meditation-container">
+          <div class="glass-card meditation-timer">
+            <div class="timer-display">
+              <div class="timer-circle">
+                <svg class="timer-svg" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="45" class="timer-bg"></circle>
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    class="timer-progress"
+                    id="timerProgress"
+                  ></circle>
+                </svg>
+                <div class="timer-text" id="timerText">05:00</div>
+              </div>
+            </div>
+            <div class="timer-controls">
+              <div class="timer-presets">
+                <button class="preset-btn" onclick="setMeditationTime(300)">
+                  5 min
+                </button>
+                <button
+                  class="preset-btn active"
+                  onclick="setMeditationTime(600)"
+                >
+                  10 min
+                </button>
+                <button class="preset-btn" onclick="setMeditationTime(900)">
+                  15 min
+                </button>
+                <button class="preset-btn" onclick="setMeditationTime(1200)">
+                  20 min
+                </button>
+              </div>
+              <div class="timer-actions">
+                <button
+                  class="btn-primary"
+                  id="meditationStartBtn"
+                  onclick="toggleMeditation()"
+                >
+                  <i class="fas fa-play"></i>
+                  Start
+                </button>
+                <button class="btn-secondary" onclick="resetMeditation()">
+                  <i class="fas fa-stop"></i>
+                  Reset
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card breathing-exercise">
+            <div class="card-header">
+              <h3>Breathing Exercise</h3>
+            </div>
+            <div class="breathing-container">
+              <div class="breathing-circle" id="breathingCircle">
+                <div class="breathing-text" id="breathingText">
+                  Click to start
+                </div>
+              </div>
+              <button
+                class="btn-primary"
+                id="breathingBtn"
+                onclick="toggleBreathing()"
+              >
+                <i class="fas fa-wind"></i>
+                Start Breathing
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="meditation-stats">
+          <div class="glass-card">
+            <div class="card-header">
+              <h3>Meditation Statistics</h3>
+            </div>
+            <div class="meditation-stats-grid">
+              <div class="stat-item">
+                <div class="stat-value" id="totalMeditationTime">0</div>
+                <div class="stat-label">Total Minutes</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="meditationSessions">0</div>
+                <div class="stat-label">Sessions</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="longestSession">0</div>
+                <div class="stat-label">Longest Session</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value" id="meditationStreak">0</div>
+                <div class="stat-label">Day Streak</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Goals Section -->
+      <section class="section" id="goals">
+        <div class="section-header">
+          <h1>Mental Wellness Goals 🎯</h1>
+          <p>Set and track your personal growth objectives</p>
+        </div>
+
+        <div class="goals-container">
+          <div class="glass-card goal-creator">
+            <div class="card-header">
+              <h3>Create New Goal</h3>
+            </div>
+            <div class="goal-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="goalTitle">Goal Title</label>
+                  <input
+                    type="text"
+                    id="goalTitle"
+                    placeholder="e.g., Meditate daily"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="goalCategory">Category</label>
+                  <select id="goalCategory">
+                    <option value="meditation">Meditation</option>
+                    <option value="gratitude">Gratitude</option>
+                    <option value="mood">Mood</option>
+                    <option value="exercise">Exercise</option>
+                    <option value="sleep">Sleep</option>
+                    <option value="social">Social</option>
+                    <option value="learning">Learning</option>
+                    <option value="creativity">Creativity</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="goalTarget">Target</label>
+                  <input
+                    type="number"
+                    id="goalTarget"
+                    placeholder="e.g., 30"
+                    min="1"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="goalUnit">Unit</label>
+                  <select id="goalUnit">
+                    <option value="days">Days</option>
+                    <option value="times">Times</option>
+                    <option value="minutes">Minutes</option>
+                    <option value="hours">Hours</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="goalDescription">Description (optional)</label>
+                <textarea
+                  id="goalDescription"
+                  placeholder="Describe your goal..."
+                  rows="3"
+                ></textarea>
+              </div>
+              <button class="btn-primary" onclick="createGoal()">
+                <i class="fas fa-plus"></i>
+                Create Goal
+              </button>
+            </div>
+          </div>
+
+          <div class="goals-list" id="goalsList">
+            <!-- Goals will be populated by JavaScript -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Insights Section -->
+      <section class="section" id="insights">
+        <div class="section-header">
+          <h1>Personal Insights 💡</h1>
+          <p>Discover patterns in your mental wellness journey</p>
+        </div>
+
+        <div class="insights-container">
+          <div class="glass-card insights-summary">
+            <div class="card-header">
+              <h3>Weekly Summary</h3>
+              <div class="card-actions">
+                <select id="insightsTimeframe" onchange="updateInsights()">
+                  <option value="week">This Week</option>
+                  <option value="month">This Month</option>
+                  <option value="quarter">Last 3 Months</option>
+                </select>
+              </div>
+            </div>
+            <div class="insights-grid" id="insightsGrid">
+              <!-- Insights will be populated by JavaScript -->
+            </div>
+          </div>
+
+          <div class="glass-card mood-correlation">
+            <div class="card-header">
+              <h3>Mood Correlations</h3>
+            </div>
+            <div class="correlation-chart">
+              <canvas id="correlationChart"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-card recommendations">
+            <div class="card-header">
+              <h3>Personalized Recommendations</h3>
+            </div>
+            <div class="recommendations-list" id="recommendationsList">
+              <!-- Recommendations will be populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Modal Container -->
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal" id="modal">
+        <div class="modal-header">
+          <h3 id="modalTitle">Modal Title</h3>
+          <button class="modal-close" onclick="closeModal()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body" id="modalBody">
+          <!-- Modal content will be populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>

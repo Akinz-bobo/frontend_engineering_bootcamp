@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mental Fitness Tracker</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-color: #6366f1;
+        --secondary-color: #8b5cf6;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --error-color: #ef4444;
+        --bg-color: #f8fafc;
+        --card-bg: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+
+      [data-theme="dark"] {
+        --bg-color: #0f172a;
+        --card-bg: #1e293b;
+        --text-primary: #f1f5f9;
+        --text-secondary: #94a3b8;
+        --border-color: #334155;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, var(--bg-color) 0%, #e0e7ff 100%);
+        color: var(--text-primary);
+        min-height: 100vh;
+        transition: all 0.3s ease;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        min-height: 100vh;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 40px;
+        animation: fadeInDown 0.8s ease;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+      }
+
+      .theme-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--card-bg);
+        border: 2px solid var(--border-color);
+        border-radius: 50px;
+        padding: 10px 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow);
+        z-index: 1000;
+      }
+
+      .theme-toggle:hover {
+        transform: scale(1.05);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.6s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .card h2 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .mood-section {
+        text-align: center;
+      }
+
+      .mood-display {
+        font-size: 4rem;
+        margin: 20px 0;
+        transition: all 0.3s ease;
+      }
+
+      .mood-slider {
+        width: 100%;
+        height: 8px;
+        border-radius: 5px;
+        background: linear-gradient(
+          to right,
+          #ef4444,
+          #f59e0b,
+          #eab308,
+          #84cc16,
+          #22c55e
+        );
+        outline: none;
+        margin: 20px 0;
+        cursor: pointer;
+      }
+
+      .mood-slider::-webkit-slider-thumb {
+        appearance: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: white;
+        border: 3px solid var(--primary-color);
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        transition: all 0.2s ease;
+      }
+
+      .mood-slider::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+      }
+
+      .mood-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin-top: 10px;
+      }
+
+      .gratitude-section textarea {
+        width: 100%;
+        min-height: 120px;
+        padding: 15px;
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        font-size: 1rem;
+        font-family: inherit;
+        background: var(--bg-color);
+        color: var(--text-primary);
+        resize: vertical;
+        transition: all 0.3s ease;
+      }
+
+      .gratitude-section textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      }
+
+      .quote-section {
+        text-align: center;
+        position: relative;
+      }
+
+      .quote-text {
+        font-size: 1.2rem;
+        font-style: italic;
+        line-height: 1.6;
+        margin: 20px 0;
+        color: var(--text-primary);
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .quote-author {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+      }
+
+      .btn:active {
+        transform: translateY(0);
+      }
+
+      .btn-secondary {
+        background: var(--card-bg);
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color);
+      }
+
+      .btn-secondary:hover {
+        background: var(--primary-color);
+        color: white;
+      }
+
+      .feedback {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        background: var(--success-color);
+        color: white;
+        padding: 20px 30px;
+        border-radius: 12px;
+        font-weight: 600;
+        box-shadow: var(--shadow-lg);
+        z-index: 1001;
+        transition: all 0.3s ease;
+      }
+
+      .feedback.show {
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      .gratitude-history {
+        max-height: 200px;
+        overflow-y: auto;
+        margin-top: 20px;
+        padding: 15px;
+        background: var(--bg-color);
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+      }
+
+      .gratitude-entry {
+        padding: 10px;
+        margin-bottom: 10px;
+        background: var(--card-bg);
+        border-radius: 6px;
+        border-left: 4px solid var(--primary-color);
+        animation: slideInLeft 0.3s ease;
+      }
+
+      .gratitude-entry-date {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-bottom: 5px;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+
+      .stat-card {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+      }
+
+      .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      .pulse {
+        animation: pulse 0.5s ease-in-out;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 15px;
+        }
+
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .card {
+          padding: 20px;
+        }
+
+        .theme-toggle {
+          top: 15px;
+          right: 15px;
+          padding: 8px 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <span id="theme-icon">🌙</span>
+    </div>
+
+    <div class="container">
+      <header class="header">
+        <h1>🧠 Mental Fitness Tracker</h1>
+        <p>Track your mental well-being, one day at a time</p>
+      </header>
+
+      <!-- Mood Tracking Section -->
+      <div class="card mood-section">
+        <h2>📊 How are you feeling today?</h2>
+        <div class="mood-display" id="moodDisplay">😐</div>
+        <input
+          type="range"
+          min="1"
+          max="5"
+          value="3"
+          class="mood-slider"
+          id="moodSlider"
+        />
+        <div class="mood-labels">
+          <span>😢 Terrible</span>
+          <span>😕 Bad</span>
+          <span>😐 Okay</span>
+          <span>😊 Good</span>
+          <span>😄 Amazing</span>
+        </div>
+        <button class="btn" onclick="saveMood()" style="margin-top: 20px">
+          Save Mood
+        </button>
+        <div
+          id="moodFeedback"
+          style="
+            margin-top: 15px;
+            color: var(--success-color);
+            font-weight: 600;
+          "
+        ></div>
+      </div>
+
+      <!-- Gratitude Journal Section -->
+      <div class="card gratitude-section">
+        <h2>🙏 Gratitude Journal</h2>
+        <textarea
+          id="gratitudeText"
+          placeholder="What are you grateful for today? Write down three things that made you smile..."
+        ></textarea>
+        <button class="btn" onclick="saveGratitude()" style="margin-top: 15px">
+          Save Gratitude Entry
+        </button>
+        <div class="gratitude-history" id="gratitudeHistory">
+          <h3 style="margin-bottom: 15px; color: var(--primary-color)">
+            📚 Your Recent Entries
+          </h3>
+          <div id="gratitudeEntries"></div>
+        </div>
+      </div>
+
+      <!-- Motivational Quote Section -->
+      <div class="card quote-section">
+        <h2>✨ Daily Inspiration</h2>
+        <div class="quote-text" id="quoteText">
+          Loading your daily inspiration...
+        </div>
+        <div class="quote-author" id="quoteAuthor"></div>
+        <button class="btn btn-secondary" onclick="getNewQuote()">
+          <span id="quoteButtonText">Get New Quote</span>
+        </button>
+      </div>
+
+      <!-- Statistics Section -->
+      <div class="card">
+        <h2>📈 Your Progress</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number" id="totalEntries">0</div>
+            <div class="stat-label">Gratitude Entries</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="averageMood">0</div>
+            <div class="stat-label">Average Mood</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="streakDays">0</div>
+            <div class="stat-label">Day Streak</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div class="feedback" id="feedbackModal">
+      <span id="feedbackText">✅ Saved successfully!</span>
+    </div>
+
+    <script>
+      // Global variables
+      let currentMood = 3;
+      const moodEmojis = ["😢", "😕", "😐", "😊", "😄"];
+
+      // Initialize app
+      document.addEventListener("DOMContentLoaded", function () {
+        initializeApp();
+      });
+
+      function initializeApp() {
+        loadTheme();
+        loadMoodFromSession();
+        loadGratitudeHistory();
+        getNewQuote();
+        updateStats();
+        setupMoodSlider();
+      }
+
+      // Theme Management
+      function toggleTheme() {
+        const currentTheme =
+          document.documentElement.getAttribute("data-theme");
+        const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+        document.documentElement.setAttribute("data-theme", newTheme);
+        document.getElementById("theme-icon").textContent =
+          newTheme === "dark" ? "☀️" : "🌙";
+
+        // Save theme preference in cookies
+        setCookie("theme", newTheme, 365);
+
+        showFeedback(`Switched to ${newTheme} mode`);
+      }
+
+      function loadTheme() {
+        const savedTheme = getCookie("theme") || "light";
+        document.documentElement.setAttribute("data-theme", savedTheme);
+        document.getElementById("theme-icon").textContent =
+          savedTheme === "dark" ? "☀️" : "🌙";
+      }
+
+      // Mood Tracking
+      function setupMoodSlider() {
+        const slider = document.getElementById("moodSlider");
+        const display = document.getElementById("moodDisplay");
+
+        slider.addEventListener("input", function () {
+          currentMood = parseInt(this.value);
+          display.textContent = moodEmojis[currentMood - 1];
+          display.classList.add("pulse");
+          setTimeout(() => display.classList.remove("pulse"), 500);
+        });
+      }
+
+      function saveMood() {
+        // Save to sessionStorage (clears when tab closes)
+        sessionStorage.setItem("currentMood", currentMood);
+        sessionStorage.setItem("moodTimestamp", new Date().toISOString());
+
+        // Also save to localStorage for statistics
+        const moodHistory = JSON.parse(
+          localStorage.getItem("moodHistory") || "[]"
+        );
+        moodHistory.push({
+          mood: currentMood,
+          date: new Date().toISOString().split("T")[0],
+          timestamp: new Date().toISOString(),
+        });
+        localStorage.setItem("moodHistory", JSON.stringify(moodHistory));
+
+        document.getElementById(
+          "moodFeedback"
+        ).textContent = `✅ Mood saved! You're feeling ${getMoodText(
+          currentMood
+        )} today.`;
+
+        showFeedback("Mood saved successfully!");
+        updateStats();
+      }
+
+      function loadMoodFromSession() {
+        const savedMood = sessionStorage.getItem("currentMood");
+        if (savedMood) {
+          currentMood = parseInt(savedMood);
+          document.getElementById("moodSlider").value = currentMood;
+          document.getElementById("moodDisplay").textContent =
+            moodEmojis[currentMood - 1];
+
+          const timestamp = sessionStorage.getItem("moodTimestamp");
+          if (timestamp) {
+            const savedDate = new Date(timestamp).toLocaleDateString();
+            document.getElementById(
+              "moodFeedback"
+            ).textContent = `Last saved: ${savedDate} - ${getMoodText(
+              currentMood
+            )}`;
+          }
+        }
+      }
+
+      function getMoodText(mood) {
+        const moodTexts = ["terrible", "bad", "okay", "good", "amazing"];
+        return moodTexts[mood - 1];
+      }
+
+      // Gratitude Journal
+      function saveGratitude() {
+        const gratitudeText = document
+          .getElementById("gratitudeText")
+          .value.trim();
+
+        if (!gratitudeText) {
+          showFeedback(
+            "Please write something you're grateful for!",
+            "warning"
+          );
+          return;
+        }
+
+        const gratitudeEntries = JSON.parse(
+          localStorage.getItem("gratitudeEntries") || "[]"
+        );
+        const newEntry = {
+          id: Date.now(),
+          text: gratitudeText,
+          date: new Date().toISOString(),
+          displayDate: new Date().toLocaleDateString("en-US", {
+            weekday: "short",
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          }),
+        };
+
+        gratitudeEntries.unshift(newEntry); // Add to beginning
+        localStorage.setItem(
+          "gratitudeEntries",
+          JSON.stringify(gratitudeEntries)
+        );
+
+        document.getElementById("gratitudeText").value = "";
+        loadGratitudeHistory();
+        updateStats();
+
+        showFeedback("Gratitude entry saved! 🙏");
+      }
+
+      function loadGratitudeHistory() {
+        const gratitudeEntries = JSON.parse(
+          localStorage.getItem("gratitudeEntries") || "[]"
+        );
+        const entriesContainer = document.getElementById("gratitudeEntries");
+
+        if (gratitudeEntries.length === 0) {
+          entriesContainer.innerHTML =
+            '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">No entries yet. Start by writing what you\'re grateful for!</p>';
+          return;
+        }
+
+        // Show only the last 5 entries
+        const recentEntries = gratitudeEntries.slice(0, 5);
+        entriesContainer.innerHTML = recentEntries
+          .map(
+            (entry) => `
+                <div class="gratitude-entry">
+                    <div class="gratitude-entry-date">${entry.displayDate}</div>
+                    <div>${entry.text}</div>
+                </div>
+            `
+          )
+          .join("");
+      }
+
+      // Motivational Quotes
+      async function getNewQuote() {
+        const quoteText = document.getElementById("quoteText");
+        const quoteAuthor = document.getElementById("quoteAuthor");
+        const buttonText = document.getElementById("quoteButtonText");
+
+        // Show loading state
+        buttonText.innerHTML = '<span class="loading"></span>';
+        quoteText.textContent = "Loading inspiration...";
+        quoteAuthor.textContent = "";
+
+        try {
+          // Using quotable.io API - free and doesn't require authentication
+          const response = await fetch(
+            "https://api.quotable.io/random?minLength=50&maxLength=150"
+          );
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch quote");
+          }
+
+          const data = await response.json();
+
+          // Animate the quote change
+          quoteText.style.opacity = "0";
+          setTimeout(() => {
+            quoteText.textContent = `"${data.content}"`;
+            quoteAuthor.textContent = `— ${data.author}`;
+            quoteText.style.opacity = "1";
+          }, 300);
+        } catch (error) {
+          console.error("Error fetching quote:", error);
+
+          // Fallback quotes if API fails
+          const fallbackQuotes = [
+            {
+              content: "The only way to do great work is to love what you do.",
+              author: "Steve Jobs",
+            },
+            {
+              content:
+                "Life is what happens to you while you're busy making other plans.",
+              author: "John Lennon",
+            },
+            {
+              content:
+                "The future belongs to those who believe in the beauty of their dreams.",
+              author: "Eleanor Roosevelt",
+            },
+            {
+              content:
+                "It is during our darkest moments that we must focus to see the light.",
+              author: "Aristotle",
+            },
+            {
+              content:
+                "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+              author: "Winston Churchill",
+            },
+          ];
+
+          const randomQuote =
+            fallbackQuotes[Math.floor(Math.random() * fallbackQuotes.length)];
+
+          quoteText.style.opacity = "0";
+          setTimeout(() => {
+            quoteText.textContent = `"${randomQuote.content}"`;
+            quoteAuthor.textContent = `— ${randomQuote.author}`;
+            quoteText.style.opacity = "1";
+          }, 300);
+        } finally {
+          buttonText.textContent = "Get New Quote";
+        }
+      }
+
+      // Statistics
+      function updateStats() {
+        const gratitudeEntries = JSON.parse(
+          localStorage.getItem("gratitudeEntries") || "[]"
+        );
+        const moodHistory = JSON.parse(
+          localStorage.getItem("moodHistory") || "[]"
+        );
+
+        // Total entries
+        document.getElementById("totalEntries").textContent =
+          gratitudeEntries.length;
+
+        // Average mood
+        if (moodHistory.length > 0) {
+          const avgMood =
+            moodHistory.reduce((sum, entry) => sum + entry.mood, 0) /
+            moodHistory.length;
+          document.getElementById("averageMood").textContent =
+            avgMood.toFixed(1);
+        }
+
+        // Streak calculation (simplified - consecutive days with entries)
+        const streak = calculateStreak(gratitudeEntries);
+        document.getElementById("streakDays").textContent = streak;
+      }
+
+      function calculateStreak(entries) {
+        if (entries.length === 0) return 0;
+
+        const today = new Date().toDateString();
+        const sortedEntries = entries.sort(
+          (a, b) => new Date(b.date) - new Date(a.date)
+        );
+
+        let streak = 0;
+        let currentDate = new Date();
+
+        for (let entry of sortedEntries) {
+          const entryDate = new Date(entry.date).toDateString();
+          const checkDate = currentDate.toDateString();
+
+          if (entryDate === checkDate) {
+            streak++;
+            currentDate.setDate(currentDate.getDate() - 1);
+          } else {
+            break;
+          }
+        }
+
+        return streak;
+      }
+
+      // Utility Functions
+      function showFeedback(message, type = "success") {
+        const feedback = document.getElementById("feedbackModal");
+        const feedbackText = document.getElementById("feedbackText");
+
+        feedbackText.textContent = message;
+        feedback.style.background =
+          type === "warning" ? "var(--warning-color)" : "var(--success-color)";
+        feedback.classList.add("show");
+
+        setTimeout(() => {
+          feedback.classList.remove("show");
+        }, 2000);
+      }
+
+      // Cookie Management
+      function setCookie(name, value, days) {
+        const expires = new Date();
+        expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+        document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
+      }
+
+      function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(";");
+        for (let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) === " ") c = c.substring(1, c.length);
+          if (c.indexOf(nameEQ) === 0)
+            return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+      }
+
+      // Add some keyboard shortcuts for better UX
+      document.addEventListener("keydown", function (e) {
+        // Ctrl/Cmd + Enter to save gratitude
+        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+          if (
+            document.activeElement === document.getElementById("gratitudeText")
+          ) {
+            saveGratitude();
+          }
+        }
+
+        // Escape to clear gratitude text
+        if (e.key === "Escape") {
+          if (
+            document.activeElement === document.getElementById("gratitudeText")
+          ) {
+            document.getElementById("gratitudeText").value = "";
+          }
+        }
+      });
+
+      // Add smooth scrolling for better UX
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          document.querySelector(this.getAttribute("href")).scrollIntoView({
+            behavior: "smooth",
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
